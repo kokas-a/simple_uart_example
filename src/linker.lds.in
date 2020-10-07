@@ -1,0 +1,63 @@
+/*
+ * MIPS32 linker script
+ *
+ *  kernel text
+ *  kernel data
+ *
+ */
+
+#include "arch.h"
+
+#ifdef __BE__
+OUTPUT_FORMAT("elf32-tradbigmips") 
+#else
+OUTPUT_FORMAT("elf32-tradlittlemips")
+#endif
+
+OUTPUT_ARCH( "mips" )
+
+ENTRY(__start)
+
+SECTIONS {
+
+	. = LOAD_ADDRESS;
+	.text : {
+		ktext_start = .;
+		*(.text);
+		ktext_end = .;
+	}
+	
+	ktext_size = SIZEOF(.text);
+	
+	.data : {
+		kdata_start = .;
+		*(.data);                       /* initialized data */
+		*(.rodata*);
+		*(.sdata);
+		*(.reginfo);
+		*(.scommon);
+		*(COMMON);                      /* global variables */
+		. = ALIGN(8);
+	}
+	
+	kdata_size = SIZEOF(.data);
+	
+	.bss : 
+	{
+		/* uninitialized static variables */	
+		bss_start = .;
+		*(.sbss)
+		*(.bss)
+		*(.bss.*)
+		bss_end = .;
+	}
+	
+	kbss_start = ADDR(.bss);
+	kbss_size = SIZEOF(.bss);
+	
+	_gp = . + 0x8000;
+	.lit8 : { *(.lit8) }
+	.lit4 : { *(.lit4) }
+
+	kdata_end = .;
+}
