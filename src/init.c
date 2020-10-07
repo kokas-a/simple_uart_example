@@ -10,6 +10,7 @@
 
 #define CBUF_SIZE	(256)
 
+#if defined MACH_MALTA
 static struct uart_bsp_s uart_bsp[] = {
 		{
 			.base_addr = (void *)0x180003f8UL,
@@ -22,6 +23,22 @@ static struct uart_bsp_s uart_bsp[] = {
 			.reg_len  =  1,
 		},
 };
+#elif defined MACH_MT7688
+static struct uart_bsp_s uart_bsp[] = {
+		{
+			.base_addr = (void *)0x10000d00UL,
+			.base_freq = 39000000,
+			.reg_len  =  4,
+		},
+		{
+			.base_addr = (void *)0x10000e00UL,
+			.base_freq = 39000000,
+			.reg_len  =  4,
+		},
+};
+#else
+#error Wrong Machine
+#endif
 
 static uint8_t buf[CBUF_SIZE];
 

@@ -1,6 +1,9 @@
 CROSS_COMPILE?=mips-linux-gnu-
 GCC_POSTFIX?=-8
 
+# Target MACH: MALTA or MACH_MT7688
+MACH=MALTA
+
 CC=     $(CROSS_COMPILE)gcc$(GCC_POSTFIX)
 LD=     $(CROSS_COMPILE)ld
 
@@ -8,13 +11,23 @@ OUTPUTFILE=uart
 INCLUDES += -I./h 
 OBJDIR = ./obj
 
-CFLAGS += -G0 -O0 -g3 -march=mips32 -EB -Wall
+CFLAGS += -G0 -O0 -g3 -march=mips32  -Wall
 CFLAGS += -mno-abicalls
 CFLAGS += -nodefaultlibs
 CFLAGS += -fno-pic
 CFLAGS += -fno-builtin
 
+ifeq ($(MACH),MALTA)
+CFLAGS += -EB
 DEFINES=-D__BE__
+DEFINES+=-DMACH_MALTA
+endif
+
+ifeq ($(MACH),MACH_MT7688)
+CFLAGS += -EL
+DEFINES=-D__LE__
+DEFINES+=-DMACH_MT7688
+endif
 
 LDSCRIPT = $(OBJDIR)/linker.lds
 LDFLAGS += -T$(LDSCRIPT)
@@ -47,7 +60,7 @@ $(OUTPUTFILE):$(COMMON_OBJ)
 
 $(OBJDIR)/%.o: %.c
 	@echo [CC] $<
-	$(CC) -c $(INCLUDES) $(CFLAGS) -o $@ $<
+	$(CC) -c $(INCLUDES) $(CFLAGS) $(DEFINES) -o $@ $<
 	
 $(OBJDIR)/%.o: %.S
 	@echo [CC] $<
