@@ -11,9 +11,10 @@ OUTPUTFILE=uart
 INCLUDES += -I./h 
 OBJDIR = ./obj
 
-CFLAGS += -G0 -O0 -g3 -march=mips32  -Wall
+CFLAGS += -G0 -O0 -g3 -std=c99 -march=mips32  -Wall -Wextra
 CFLAGS += -mno-abicalls
 CFLAGS += -nodefaultlibs
+CFLAGS += -nostdinc
 CFLAGS += -fno-pic
 CFLAGS += -fno-builtin
 
@@ -44,6 +45,15 @@ COMMON_OBJ =  $(addprefix $(OBJDIR)/, $(OBJ))
 
 ###############################################################################
 #
+# 
+#
+prepare_build:
+	@if [ ! -d "obj" ]; then \
+		mkdir -p obj; \
+	fi
+	
+###############################################################################
+#
 # Buld linker script form scratch
 #
 mk_linker: $(OBJDIR)/linker.lds
@@ -70,7 +80,7 @@ $(OBJDIR)/%.o: %.S
 #
 #
 .PHONY: all
-all: mk_linker $(OUTPUTFILE)
+all: prepare_build mk_linker $(OUTPUTFILE)
 
 ###############################################################################
 #

@@ -314,6 +314,7 @@ status_t uart_read_c(struct uart_hdlr_s *h, uint8_t *c)
 {
 	struct uart_priv_s *p;
 	status_t ret_val = (-1);
+	uint32_t reg_val;
 
 	if(!h || !h->p){
 		/* EINVAL */
@@ -326,6 +327,10 @@ status_t uart_read_c(struct uart_hdlr_s *h, uint8_t *c)
 		/* Data is ready. A complete incoming character
 		 *  has been received and transferred into the receiver
 		 *  buffer register (RBR) */
+
+		reg_val = uart_read_reg(p, UART_RBR_INCR);
+		*c  = reg_val & 0xFF;
+
 		ret_val = 0;
 	}
 

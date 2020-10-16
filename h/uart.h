@@ -8,6 +8,8 @@
 #ifndef H_UART_H_
 #define H_UART_H_
 
+#include "types.h"
+
 #define MAX_NUM_OF_UARTS	(3)
 
 struct uart_bsp_s{
